@@ -24,6 +24,7 @@ DEFAULT_LIST = HERE / "bloatware.json"
 STATE_DIR = Path(os.environ.get("TV_DEBLOAT_HOME", Path.home() / ".tv-debloat"))
 TIERS = ("safe", "optional", "aggressive")
 DEFAULT_PORT = 5555
+LAST_DEVICE = STATE_DIR / "last_device"
 
 
 # --------------------------------------------------------------------------- adb
@@ -88,6 +89,18 @@ class Adb:
                 raise AdbError(_state_help(*bad[0]))
             raise AdbError("No TV connected. Run: tvdebloat connect <tv-ip>")
         if len(ready) > 1:
+            # Prefer the TV we last connected to (pairing can list it twice).
+            last = LAST_DEVICE.read_text().strip() if LAST_DEVICE.exists() else ""
+            if last in ready:
+                self.serial = last
+                return last
+            # Same physical device under two names (mDNS + ip:port)?
+            ids = set()
+            for s in ready:
+                ids.add(self.run("-s", s, "shell", "getprop ro.serialno", check=False).strip())
+            if len(ids) == 1:
+                self.serial = sorted(ready, key=lambda s: ":" not in s)[0]
+                return self.serial
             raise AdbError(
                 "Several devices connected; pick one with --device:\n  " + "\n  ".join(ready)
             )
@@ -215,13 +228,16 @@ def cmd_connect(args) -> int:
     except AdbError as e:
         print(e)
         return 1
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    LAST_DEVICE.write_text(target)
     print(color("Connected.", "32"))
     return _print_info(adb)
 
 
 def cmd_pair(args) -> int:
     print(Adb().run("pair", args.target, args.code, check=False))
-    print("Now run: tvdebloat connect <tv-ip>")
+    print("Paired. Now run: tvdebloat connect <tv-ip>:<port>\n"
+          "(use the IP address & Port shown on the TV's Wireless debugging screen, not the pairing port)")
     return 0
 
 
@@ -260,8 +276,10 @@ def cmd_scan(args) -> int:
             print(f"{'':<21}! {f['note']}")
     counts = {t: sum(1 for f in found if f["tier"] == t and f["status"] == "active") for t in TIERS}
     print(f"\nActive: {counts['safe']} safe, {counts['optional']} optional, {counts['aggressive']} aggressive")
-    print("Next: tvdebloat clean            (safe tier only)\n"
-          "      tvdebloat clean --level optional")
+    if counts["safe"]:
+        print("Next: tvdebloat clean            (safe tier only)")
+    elif counts["optional"]:
+        print("Safe tier done. Optional apps can be removed with: tvdebloat clean --level optional --skip <app>")
     return 0
 
 
@@ -296,6 +314,8 @@ def cmd_clean(args) -> int:
     else:
         allowed = tiers_up_to(args.level)
         targets = [f for f in scan(adb, catalog) if f["tier"] in allowed and f["status"] == "active"]
+        if args.group:
+            targets = [t for t in targets if t["group"] in args.group]
         if args.skip:
             targets = [t for t in targets if t["package"] not in args.skip]
 
@@ -338,6 +358,8 @@ def cmd_clean(args) -> int:
     save_state(adb.serial, state)
     print(f"\nDone. {len(targets) - failures} changed, {failures} failed. "
           f"Undo any time with: tvdebloat restore")
+    if failures < len(targets) and not args.reboot:
+        print("Apps still on the home screen? Restart the TV (or re-run with --reboot).")
     if args.reboot and failures < len(targets):
         adb.run("reboot", check=False)
         print("Rebooting TV ...")
@@ -428,6 +450,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--level", choices=TIERS, default="safe", help="how far to go (default: safe)")
     p.add_argument("--package", "-p", action="append", help="target a specific package (repeatable)")
     p.add_argument("--skip", action="append", help="keep this package (repeatable)")
+    p.add_argument("--group", "-g", action="append",
+                   help="only these catalog groups, e.g. tcl, google, streaming (repeatable)")
     p.add_argument("--uninstall", action="store_true",
                    help="uninstall for user 0 instead of disabling (frees more; still restorable)")
     p.add_argument("--dry-run", "-n", action="store_true", help="show what would change")

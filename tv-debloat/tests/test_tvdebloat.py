@@ -68,10 +68,23 @@ class TvDebloatTest(unittest.TestCase):
         self.assertEqual(pk["com.tcl.smartalexa"], "enabled")   # optional
         self.assertEqual(pk["com.tcl.ttvs"], "enabled")         # aggressive
         self.assertEqual(pk["com.tcl.tv"], "enabled")           # protected
+        code, out = self.run_cli("clean", "-n", "--level", "optional", "-g", "tcl")
+        self.assertIn("com.tcl.smartalexa", out)
+        self.assertNotIn("com.netflix.ninja", out)
         code, out = self.run_cli("clean", "-n", "--level", "aggressive")
         self.assertIn("before a firmware update", out)
         self.assertNotIn("com.tcl.tv ", out)
         self.assertIn("Refusing", self.run_cli("clean", "-y", "-p", "com.tcl.tv")[1])
+
+    def test_same_tv_listed_twice(self):
+        os.environ["FAKE_ADB_DUP"] = "1"
+        try:
+            self.run_cli("connect", "192.168.1.50")
+            self.assertEqual(self.run_cli("scan")[0], 0)
+            os.remove(os.path.join(self.tmp, "home", "last_device"))
+            self.assertEqual(self.run_cli("scan")[0], 0)  # falls back to serialno match
+        finally:
+            del os.environ["FAKE_ADB_DUP"]
 
     def test_refuses_protected(self):
         self.run_cli("connect", "192.168.1.50")

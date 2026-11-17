@@ -20,10 +20,12 @@ if a[0] == "connect":
 elif a[0] == "devices":
     print("List of devices attached")
     if st["connected"]: print("192.168.1.50:5555\tdevice")
+    if st["connected"] and os.environ.get("FAKE_ADB_DUP"):
+        print("adb-TCL123._adb-tls-connect._tcp\tdevice")
 elif a[0] == "shell":
     c = a[1].split()
     if c[0] == "getprop":
-        print({"ro.product.manufacturer": "Sony", "ro.product.model": "BRAVIA",
+        print({"ro.serialno": "TCL123", "ro.product.manufacturer": "Sony", "ro.product.model": "BRAVIA",
                "ro.build.version.release": "12"}.get(c[1], ""))
     elif c[:3] == ["pm", "list", "packages"]:
         f = c[3] if len(c) > 3 else ""
