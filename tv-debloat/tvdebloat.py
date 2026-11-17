@@ -24,6 +24,7 @@ DEFAULT_LIST = HERE / "bloatware.json"
 STATE_DIR = Path(os.environ.get("TV_DEBLOAT_HOME", Path.home() / ".tv-debloat"))
 TIERS = ("safe", "optional", "aggressive")
 DEFAULT_PORT = 5555
+LAST_DEVICE = STATE_DIR / "last_device"
 
 
 # --------------------------------------------------------------------------- adb
@@ -88,6 +89,18 @@ class Adb:
                 raise AdbError(_state_help(*bad[0]))
             raise AdbError("No TV connected. Run: tvdebloat connect <tv-ip>")
         if len(ready) > 1:
+            # Prefer the TV we last connected to (pairing can list it twice).
+            last = LAST_DEVICE.read_text().strip() if LAST_DEVICE.exists() else ""
+            if last in ready:
+                self.serial = last
+                return last
+            # Same physical device under two names (mDNS + ip:port)?
+            ids = set()
+            for s in ready:
+                ids.add(self.run("-s", s, "shell", "getprop ro.serialno", check=False).strip())
+            if len(ids) == 1:
+                self.serial = sorted(ready, key=lambda s: ":" not in s)[0]
+                return self.serial
             raise AdbError(
                 "Several devices connected; pick one with --device:\n  " + "\n  ".join(ready)
             )
@@ -215,13 +228,16 @@ def cmd_connect(args) -> int:
     except AdbError as e:
         print(e)
         return 1
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    LAST_DEVICE.write_text(target)
     print(color("Connected.", "32"))
     return _print_info(adb)
 
 
 def cmd_pair(args) -> int:
     print(Adb().run("pair", args.target, args.code, check=False))
-    print("Now run: tvdebloat connect <tv-ip>")
+    print("Paired. Now run: tvdebloat connect <tv-ip>:<port>\n"
+          "(use the IP address & Port shown on the TV's Wireless debugging screen, not the pairing port)")
     return 0
 
 

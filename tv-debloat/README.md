@@ -18,6 +18,15 @@ A command-line tool that connects to your smart TV over Wi-Fi (ADB) and removes 
 
 Python 3.8+ is needed. There are no other dependencies.
 
+### Newer Google TV (Android 12+, e.g. TCL): Wireless debugging
+
+If Developer options has **Wireless debugging** instead of a plain on/off switch:
+
+1. Set Wireless debugging to **Enabled**, then open **Pair device with pairing code**.
+2. `./tvdebloat.py pair <ip>:<pairing-port> <6-digit-code>`
+3. Back on the Wireless debugging screen, note the **IP address & Port** (a different port from the pairing one).
+4. `./tvdebloat.py connect <ip>:<port>`
+
 ## 2. Use it
 
 ```bash
