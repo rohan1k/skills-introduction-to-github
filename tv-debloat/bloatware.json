@@ -1,0 +1,85 @@
+{
+  "_comment": "Packages are only touched if they are actually installed on the TV. Tiers: safe = removed by default; optional = preinstalled apps some people use; aggressive = updaters/telemetry/voice that may break features.",
+  "groups": {
+    "google": {
+      "label": "Google / Android TV",
+      "packages": {
+        "com.google.android.play.games": {"tier": "safe", "desc": "Google Play Games"},
+        "com.google.android.videos": {"tier": "safe", "desc": "Google TV / Play Movies & TV"},
+        "com.google.android.youtube.tvmusic": {"tier": "optional", "desc": "YouTube Music"},
+        "com.google.android.youtube.tvkids": {"tier": "optional", "desc": "YouTube Kids"},
+        "com.google.android.youtube.tv": {"tier": "optional", "desc": "YouTube"},
+        "com.google.android.leanbacklauncher.recommendations": {"tier": "safe", "desc": "Home screen recommendations"},
+        "com.google.android.tvrecommendations": {"tier": "safe", "desc": "Recommendations service"},
+        "com.google.android.feedback": {"tier": "safe", "desc": "Feedback reporter"},
+        "com.google.android.katniss": {"tier": "aggressive", "desc": "Google Assistant / voice search (breaks voice remote)"},
+        "com.google.android.backdrop": {"tier": "optional", "desc": "Ambient mode screensaver"}
+      }
+    },
+    "amazon": {
+      "label": "Amazon Fire TV",
+      "packages": {
+        "com.amazon.bueller.photos": {"tier": "safe", "desc": "Amazon Photos"},
+        "com.amazon.ags.app": {"tier": "safe", "desc": "Amazon GameCircle"},
+        "com.amazon.kso": {"tier": "safe", "desc": "Sponsored content / ads"},
+        "com.amazon.imdb.tv.android.app": {"tier": "optional", "desc": "Freevee"},
+        "com.amazon.avod": {"tier": "optional", "desc": "Prime Video"},
+        "com.amazon.tv.forcedotaupdater.v2": {"tier": "aggressive", "desc": "Forced OTA updater"},
+        "com.amazon.device.software.ota": {"tier": "aggressive", "desc": "System updates (no more security patches)"},
+        "com.amazon.vizzini": {"tier": "aggressive", "desc": "Alexa voice (breaks voice remote)"}
+      }
+    },
+    "nvidia": {
+      "label": "Nvidia Shield",
+      "packages": {
+        "com.nvidia.tegrazone3": {"tier": "safe", "desc": "Nvidia Games"}
+      }
+    },
+    "tcl": {
+      "label": "TCL",
+      "packages": {
+        "com.tcl.guard": {"tier": "safe", "desc": "TCL Guard"},
+        "com.tcl.appmarket": {"tier": "optional", "desc": "TCL App Store"}
+      }
+    },
+    "streaming": {
+      "label": "Preinstalled third-party apps",
+      "packages": {
+        "com.netflix.ninja": {"tier": "optional", "desc": "Netflix"},
+        "com.amazon.amazonvideo.livingroom": {"tier": "optional", "desc": "Prime Video"},
+        "com.disney.disneyplus": {"tier": "optional", "desc": "Disney+"},
+        "com.spotify.tv.android": {"tier": "optional", "desc": "Spotify"},
+        "com.hulu.livingroomplus": {"tier": "optional", "desc": "Hulu"},
+        "com.plexapp.android": {"tier": "optional", "desc": "Plex"},
+        "tv.pluto.android": {"tier": "optional", "desc": "Pluto TV"},
+        "com.tubitv": {"tier": "optional", "desc": "Tubi"}
+      }
+    }
+  },
+  "protected": [
+    "android",
+    "com.android.systemui",
+    "com.android.settings",
+    "com.android.tv.settings",
+    "com.android.vending",
+    "com.android.packageinstaller",
+    "com.google.android.packageinstaller",
+    "com.google.android.gms",
+    "com.google.android.gsf",
+    "com.google.android.webview",
+    "com.android.webview",
+    "com.google.android.tvlauncher",
+    "com.google.android.leanbacklauncher",
+    "com.google.android.apps.tv.launcherx",
+    "com.google.android.tungsten.setupwraith",
+    "com.google.android.tvsetup",
+    "com.amazon.tv.launcher",
+    "com.amazon.tv.settings.v2",
+    "com.amazon.venezia",
+    "com.amazon.dcp",
+    "com.android.providers.settings",
+    "com.android.inputmethod.latin",
+    "com.google.android.inputmethod.latin",
+    "com.google.android.leanback.ime"
+  ]
+}
