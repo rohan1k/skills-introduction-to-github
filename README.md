@@ -11,19 +11,25 @@ A command-line tool that connects to your smart TV over Wi-Fi and removes preins
 
 ```bash
 git clone https://github.com/rohan1k/tvtrim.git
-cd tvtrim/tv-debloat
-brew install android-platform-tools        # or: winget install Google.PlatformTools / sudo apt install adb
-
-python3 tvdebloat.py connect <tv-ip>       # accept the prompt on the TV
-python3 tvdebloat.py scan                  # see what's installed
-python3 tvdebloat.py clean --dry-run       # preview
-python3 tvdebloat.py clean                 # remove ads and telemetry
-python3 tvdebloat.py restore               # undo everything
+cd tvtrim/tvtrim
+brew install android-platform-tools
+sudo mkdir -p /usr/local/bin
+sudo ln -sf "$PWD/tvtrim.py" /usr/local/bin/tvtrim
 ```
+
+On Windows use `winget install Google.PlatformTools`, and on Linux `sudo apt install adb`. The last two lines make `tvtrim` a command you can run from anywhere; without them, use `python3 tvtrim.py` instead.
+
+| Command | What it does |
+|---|---|
+| `tvtrim connect <tv-ip>` | Connect; accept the prompt on the TV |
+| `tvtrim scan` | See what's installed |
+| `tvtrim clean --dry-run` | Preview |
+| `tvtrim clean` | Remove ads and telemetry |
+| `tvtrim restore` | Undo everything |
 
 Before connecting, turn on debugging on the TV. Go to Settings → System → About and tap **Android TV OS build** 7 times, then Developer options → **USB debugging** or **Wireless debugging**.
 
-See [`tv-debloat/README.md`](tv-debloat/README.md) for the full guide: the three tiers, keeping specific apps, pairing with Wireless debugging, TCL-specific notes, and getting rid of home-screen ads.
+See [`tvtrim/README.md`](tvtrim/README.md) for the full guide: the three tiers, keeping specific apps, pairing with Wireless debugging, TCL-specific notes, and getting rid of home-screen ads.
 
 ## Tested on
 
