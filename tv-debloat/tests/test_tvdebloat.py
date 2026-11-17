@@ -68,6 +68,9 @@ class TvDebloatTest(unittest.TestCase):
         self.assertEqual(pk["com.tcl.smartalexa"], "enabled")   # optional
         self.assertEqual(pk["com.tcl.ttvs"], "enabled")         # aggressive
         self.assertEqual(pk["com.tcl.tv"], "enabled")           # protected
+        code, out = self.run_cli("clean", "-n", "--level", "optional", "-g", "tcl")
+        self.assertIn("com.tcl.smartalexa", out)
+        self.assertNotIn("com.netflix.ninja", out)
         code, out = self.run_cli("clean", "-n", "--level", "aggressive")
         self.assertIn("before a firmware update", out)
         self.assertNotIn("com.tcl.tv ", out)

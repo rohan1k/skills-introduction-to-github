@@ -312,6 +312,8 @@ def cmd_clean(args) -> int:
     else:
         allowed = tiers_up_to(args.level)
         targets = [f for f in scan(adb, catalog) if f["tier"] in allowed and f["status"] == "active"]
+        if args.group:
+            targets = [t for t in targets if t["group"] in args.group]
         if args.skip:
             targets = [t for t in targets if t["package"] not in args.skip]
 
@@ -444,6 +446,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--level", choices=TIERS, default="safe", help="how far to go (default: safe)")
     p.add_argument("--package", "-p", action="append", help="target a specific package (repeatable)")
     p.add_argument("--skip", action="append", help="keep this package (repeatable)")
+    p.add_argument("--group", "-g", action="append",
+                   help="only these catalog groups, e.g. tcl, google, streaming (repeatable)")
     p.add_argument("--uninstall", action="store_true",
                    help="uninstall for user 0 instead of disabling (frees more; still restorable)")
     p.add_argument("--dry-run", "-n", action="store_true", help="show what would change")

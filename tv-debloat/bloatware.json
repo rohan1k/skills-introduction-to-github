@@ -248,6 +248,14 @@
           "tier": "aggressive",
           "desc": "TCL first-boot setup (includes Samba TV ACR consent)",
           "note": "Run `tvdebloat restore -p com.tcl.initsetup` before a factory reset"
+        },
+        "com.tcl.tv.plus": {
+          "tier": "optional",
+          "desc": "TCL tv+ ad-supported free channels"
+        },
+        "com.tcl.browser": {
+          "tier": "optional",
+          "desc": "TCL web browser"
         }
       }
     },
@@ -285,6 +293,34 @@
         "com.tubitv": {
           "tier": "optional",
           "desc": "Tubi"
+        },
+        "com.apple.atve.androidtv.appletv": {
+          "tier": "optional",
+          "desc": "Apple TV"
+        },
+        "com.crunchyroll.crunchyroid": {
+          "tier": "optional",
+          "desc": "Crunchyroll"
+        },
+        "com.espn.score_center": {
+          "tier": "optional",
+          "desc": "ESPN"
+        },
+        "com.fox.foxone": {
+          "tier": "optional",
+          "desc": "Fox One"
+        },
+        "com.google.android.youtube.tvunplugged": {
+          "tier": "optional",
+          "desc": "YouTube TV"
+        },
+        "com.peacocktv.peacockandroid": {
+          "tier": "optional",
+          "desc": "Peacock"
+        },
+        "com.wbd.stream": {
+          "tier": "optional",
+          "desc": "Max"
         }
       }
     }
@@ -317,6 +353,14 @@
     "com.tcl.tv",
     "com.tcl.tvinput",
     "com.tcl.suspension",
-    "com.tcl.autopair"
+    "com.tcl.autopair",
+    "com.tcl.android.webview",
+    "com.tcl.factory.view",
+    "com.tcl.globalkeyoverlay",
+    "com.tcl.providers.config",
+    "com.tcl.systemserver",
+    "com.tcl.systemui.plugin",
+    "com.tcl.smartlink.core",
+    "com.tcl.ui_mediaCenter"
   ]
 }
