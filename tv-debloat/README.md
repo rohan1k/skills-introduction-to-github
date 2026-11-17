@@ -1,4 +1,4 @@
-# tv-debloat
+# tvtrim (tv-debloat)
 
 A command-line tool that connects to your smart TV over Wi-Fi (ADB) and removes preinstalled bloatware, reversibly.
 
