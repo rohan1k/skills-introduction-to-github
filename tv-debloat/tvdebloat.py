@@ -358,6 +358,8 @@ def cmd_clean(args) -> int:
     save_state(adb.serial, state)
     print(f"\nDone. {len(targets) - failures} changed, {failures} failed. "
           f"Undo any time with: tvdebloat restore")
+    if failures < len(targets) and not args.reboot:
+        print("Apps still on the home screen? Restart the TV (or re-run with --reboot).")
     if args.reboot and failures < len(targets):
         adb.run("reboot", check=False)
         print("Rebooting TV ...")

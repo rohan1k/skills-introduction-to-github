@@ -57,16 +57,16 @@
           "desc": "Google ambient-mode screensaver"
         },
         "com.android.adservices.api": {
-          "tier": "aggressive",
-          "desc": "Privacy Sandbox ad services (TV may refuse to disable)"
+          "tier": "optional",
+          "desc": "Privacy Sandbox ad services (some TVs refuse; harmless)"
         },
         "com.android.ondevicepersonalization.services": {
-          "tier": "aggressive",
-          "desc": "On-device ad personalization (TV may refuse to disable)"
+          "tier": "optional",
+          "desc": "On-device ad personalization (some TVs refuse; harmless)"
         },
         "com.android.federatedcompute.services": {
-          "tier": "aggressive",
-          "desc": "Federated learning service (TV may refuse to disable)"
+          "tier": "optional",
+          "desc": "Federated learning service (some TVs refuse; harmless)"
         }
       }
     },

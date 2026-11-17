@@ -79,6 +79,29 @@ Suggested run on a TCL:
 ./tvdebloat.py clean --level optional --skip com.tcl.airplay2 --skip com.mediatek.AirplayAPK --skip com.mediatek.airplaydaemon
 ```
 
+### Tested: TCL Smart TV Pro, Android 14 (Google TV)
+
+| Step | Command | Result |
+|------|---------|--------|
+| Ads and telemetry | `clean` | 14 disabled, 0 failed |
+| TCL extras (kept AirPlay) | `clean --level optional -g tcl --skip com.tcl.airplay2 --skip com.mediatek.AirplayAPK --skip com.mediatek.airplaydaemon` | 13 disabled, 0 failed |
+| Unwanted streaming apps | `clean -p <app> -p <app> ...` | 7 disabled, 0 failed |
+| Privacy Sandbox ad services | `clean -p com.android.adservices.api -p com.android.ondevicepersonalization.services -p com.android.federatedcompute.services` | 3 disabled, 0 failed |
+
+Live TV, HDMI inputs, the remote, voice search and the remaining apps all kept working.
+
+## Getting rid of the home screen ads
+
+Disabling apps doesn't remove the rows Google TV draws on its own home screen:
+
+- **"Top picks for you" and other recommendation rows:** Settings → Accounts & Sign In → your account → **Apps only mode**. This also turns off Watchlist, the Live tab and "Continue watching".
+- **The "Sponsored" banner at the top** stays even in Apps only mode. To get rid of it, install **Projectivy Launcher** from the Play Store and turn on *Override current launcher* in its settings. The Home button then opens Projectivy instead of Google TV.
+- **Disabled apps still visible?** The home screen caches its app list. Restart the TV.
+
+## When you're done
+
+Turn debugging off so nothing else on your network can control the TV: run `./tvdebloat.py disconnect`, then on the TV go to Developer options and switch off USB and Wireless debugging. Your changes stay in place. Turn debugging back on any time you need `restore`.
+
 ## Is it safe?
 
 - Nothing is deleted from the system. `disable-user` and `uninstall --user 0` only hide the app for the current user, and the APK stays on the system partition.
