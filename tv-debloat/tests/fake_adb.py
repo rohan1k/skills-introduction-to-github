@@ -8,7 +8,8 @@ st = json.load(open(path)) if os.path.exists(path) else {
         "android", "com.android.vending", "com.google.android.gms",
         "com.google.android.apps.tv.launcherx", "com.google.android.play.games",
         "com.google.android.videos", "com.google.android.feedback",
-        "com.netflix.ninja", "com.google.android.katniss", "com.example.userapp"]},
+        "com.netflix.ninja", "com.google.android.katniss", "com.example.userapp",
+        "com.tcl.tv", "com.tcl.partnercustomizer", "com.tcl.smartalexa", "com.tcl.ttvs"]},
     "third": ["com.netflix.ninja", "com.example.userapp"],
 }
 a = sys.argv[1:]

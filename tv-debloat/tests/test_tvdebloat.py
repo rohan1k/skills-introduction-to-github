@@ -60,6 +60,19 @@ class TvDebloatTest(unittest.TestCase):
         self.assertTrue(all(s == "enabled" for s in self.tv().values()), self.tv())
         self.assertIn("No changes", self.run_cli("history")[1])
 
+    def test_tcl(self):
+        self.run_cli("connect", "192.168.1.50")
+        self.run_cli("clean", "-y")
+        pk = self.tv()
+        self.assertEqual(pk["com.tcl.partnercustomizer"], "disabled")
+        self.assertEqual(pk["com.tcl.smartalexa"], "enabled")   # optional
+        self.assertEqual(pk["com.tcl.ttvs"], "enabled")         # aggressive
+        self.assertEqual(pk["com.tcl.tv"], "enabled")           # protected
+        code, out = self.run_cli("clean", "-n", "--level", "aggressive")
+        self.assertIn("before a firmware update", out)
+        self.assertNotIn("com.tcl.tv ", out)
+        self.assertIn("Refusing", self.run_cli("clean", "-y", "-p", "com.tcl.tv")[1])
+
     def test_refuses_protected(self):
         self.run_cli("connect", "192.168.1.50")
         code, out = self.run_cli("clean", "-y", "-p", "com.android.vending")

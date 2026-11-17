@@ -256,6 +256,8 @@ def cmd_scan(args) -> int:
     for f in found:
         tier = color(f"{f['tier']:<11}", TIER_COLOR[f["tier"]])
         print(f"{tier}{f['status']:<10}{f['package']:<46}{f['desc']}")
+        if f.get("note"):
+            print(f"{'':<21}! {f['note']}")
     counts = {t: sum(1 for f in found if f["tier"] == t and f["status"] == "active") for t in TIERS}
     print(f"\nActive: {counts['safe']} safe, {counts['optional']} optional, {counts['aggressive']} aggressive")
     print("Next: tvdebloat clean            (safe tier only)\n"
@@ -305,6 +307,11 @@ def cmd_clean(args) -> int:
     print(f"{verb} {len(targets)} package(s):")
     for t in targets:
         print(f"  - {t['package']:<46}{t.get('desc', '')}")
+    notes = [t for t in targets if t.get("note")]
+    if notes:
+        print(color("\nBefore you go ahead:", "33"))
+        for t in notes:
+            print(f"  ! {t['package']}: {t['note']}")
     if any(t.get("tier") == "aggressive" for t in targets):
         print(color("\nWarning: aggressive packages can break voice search or system updates.", "31"))
 
