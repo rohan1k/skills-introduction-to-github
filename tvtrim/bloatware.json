@@ -242,12 +242,12 @@
         "com.tcl.ttvs": {
           "tier": "aggressive",
           "desc": "TCL services hub: tracking, push, silent installs. Breaks T-Cast, TCL Alexa, TCL app updates",
-          "note": "Run `tvdebloat restore -p com.tcl.ttvs` before a firmware update"
+          "note": "Run `tvtrim restore -p com.tcl.ttvs` before a firmware update"
         },
         "com.tcl.initsetup": {
           "tier": "aggressive",
           "desc": "TCL first-boot setup (includes Samba TV ACR consent)",
-          "note": "Run `tvdebloat restore -p com.tcl.initsetup` before a factory reset"
+          "note": "Run `tvtrim restore -p com.tcl.initsetup` before a factory reset"
         },
         "com.tcl.tv.plus": {
           "tier": "optional",

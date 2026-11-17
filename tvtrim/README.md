@@ -1,4 +1,4 @@
-# tvtrim (tv-debloat)
+# tvtrim
 
 A command-line tool that connects to your smart TV over Wi-Fi (ADB) and removes preinstalled bloatware, reversibly.
 
@@ -18,39 +18,48 @@ A command-line tool that connects to your smart TV over Wi-Fi (ADB) and removes 
 
 Python 3.8+ is needed. There are no other dependencies.
 
+Make `tvtrim` a command you can run from anywhere (run this once, inside this folder):
+
+```bash
+chmod +x tvtrim.py
+sudo ln -sf "$PWD/tvtrim.py" /usr/local/bin/tvtrim
+```
+
+Without that step, use `python3 tvtrim.py` wherever this guide says `tvtrim`.
+
 ### Newer Google TV (Android 12+, e.g. TCL): Wireless debugging
 
 If Developer options has **Wireless debugging** instead of a plain on/off switch:
 
 1. Set Wireless debugging to **Enabled**, then open **Pair device with pairing code**.
-2. `./tvdebloat.py pair <ip>:<pairing-port> <6-digit-code>`
+2. `tvtrim pair <ip>:<pairing-port> <6-digit-code>`
 3. Back on the Wireless debugging screen, note the **IP address & Port** (a different port from the pairing one).
-4. `./tvdebloat.py connect <ip>:<port>`
+4. `tvtrim connect <ip>:<port>`
 
 ## 2. Use it
 
 ```bash
-./tvdebloat.py connect 192.168.1.50   # accept the "Allow debugging?" prompt on the TV
-./tvdebloat.py scan                   # see what bloatware is installed
-./tvdebloat.py clean --dry-run        # preview
-./tvdebloat.py clean                  # disable the "safe" tier
+tvtrim connect 192.168.1.50   # accept the "Allow debugging?" prompt on the TV
+tvtrim scan                   # see what bloatware is installed
+tvtrim clean --dry-run        # preview
+tvtrim clean                  # disable the "safe" tier
 ```
 
 Go further:
 
 ```bash
-./tvdebloat.py clean --level optional --skip com.netflix.ninja   # also preinstalled apps, keep Netflix
-./tvdebloat.py clean --uninstall                                # uninstall for user 0 (frees storage)
-./tvdebloat.py clean -p com.some.package                        # target a specific package
-./tvdebloat.py list --third-party --filter tcl                  # browse what's installed
+tvtrim clean --level optional --skip com.netflix.ninja   # also preinstalled apps, keep Netflix
+tvtrim clean --uninstall                                # uninstall for user 0 (frees storage)
+tvtrim clean -p com.some.package                        # target a specific package
+tvtrim list --third-party --filter tcl                  # browse what's installed
 ```
 
 Undo:
 
 ```bash
-./tvdebloat.py history     # what was changed
-./tvdebloat.py restore     # undo everything
-./tvdebloat.py restore -p com.google.android.videos
+tvtrim history     # what was changed
+tvtrim restore     # undo everything
+tvtrim restore -p com.google.android.videos
 ```
 
 ## Tiers
@@ -75,8 +84,8 @@ The catalog has 32 TCL packages, based on [tcl-tv-despy](https://github.com/aviv
 Suggested run on a TCL:
 
 ```bash
-./tvdebloat.py clean                                   # ads and telemetry
-./tvdebloat.py clean --level optional --skip com.tcl.airplay2 --skip com.mediatek.AirplayAPK --skip com.mediatek.airplaydaemon
+tvtrim clean                                   # ads and telemetry
+tvtrim clean --level optional --skip com.tcl.airplay2 --skip com.mediatek.AirplayAPK --skip com.mediatek.airplaydaemon
 ```
 
 ### Tested: TCL Smart TV Pro, Android 14 (Google TV)
@@ -100,12 +109,12 @@ Disabling apps doesn't remove the rows Google TV draws on its own home screen:
 
 ## When you're done
 
-Turn debugging off so nothing else on your network can control the TV: run `./tvdebloat.py disconnect`, then on the TV go to Developer options and switch off USB and Wireless debugging. Your changes stay in place. Turn debugging back on any time you need `restore`.
+Turn debugging off so nothing else on your network can control the TV: run `tvtrim disconnect`, then on the TV go to Developer options and switch off USB and Wireless debugging. Your changes stay in place. Turn debugging back on any time you need `restore`.
 
 ## Is it safe?
 
 - Nothing is deleted from the system. `disable-user` and `uninstall --user 0` only hide the app for the current user, and the APK stays on the system partition.
-- Every change is logged in `~/.tv-debloat/<device>.json`, and `restore` puts the apps back.
+- Every change is logged in `~/.tvtrim/<device>.json`, and `restore` puts the apps back.
 - A factory reset always restores everything.
 
 ## Tests

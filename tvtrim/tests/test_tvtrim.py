@@ -11,9 +11,9 @@ class TvDebloatTest(unittest.TestCase):
         self.tmp = tempfile.mkdtemp()
         os.environ["ADB"] = str(HERE / "fake_adb.py")
         os.environ["FAKE_ADB_STATE"] = os.path.join(self.tmp, "tv.json")
-        os.environ["TV_DEBLOAT_HOME"] = os.path.join(self.tmp, "home")
-        import importlib, tvdebloat
-        self.t = importlib.reload(tvdebloat)
+        os.environ["TVTRIM_HOME"] = os.path.join(self.tmp, "home")
+        import importlib, tvtrim
+        self.t = importlib.reload(tvtrim)
 
     def run_cli(self, *argv):
         buf = io.StringIO()
@@ -85,6 +85,24 @@ class TvDebloatTest(unittest.TestCase):
             self.assertEqual(self.run_cli("scan")[0], 0)  # falls back to serialno match
         finally:
             del os.environ["FAKE_ADB_DUP"]
+
+    def test_migrates_legacy_history(self):
+        import importlib
+        fake_home = Path(self.tmp) / "user"
+        (fake_home / ".tv-debloat").mkdir(parents=True)
+        (fake_home / ".tv-debloat" / "tv.json").write_text("{}")
+        saved = {k: os.environ.pop(k, None) for k in ("TVTRIM_HOME", "TV_DEBLOAT_HOME")}
+        os.environ["HOME"], old_home = str(fake_home), os.environ.get("HOME")
+        try:
+            t = importlib.reload(self.t)
+            self.assertEqual(t.STATE_DIR, fake_home / ".tvtrim")
+            self.assertTrue((fake_home / ".tvtrim" / "tv.json").exists())
+            self.assertFalse((fake_home / ".tv-debloat").exists())
+        finally:
+            os.environ["HOME"] = old_home
+            for k, v in saved.items():
+                if v is not None:
+                    os.environ[k] = v
 
     def test_refuses_protected(self):
         self.run_cli("connect", "192.168.1.50")

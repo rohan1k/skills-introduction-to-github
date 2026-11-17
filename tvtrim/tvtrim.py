@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""tv-debloat: connect to an Android TV / Google TV / Fire TV over ADB and
+"""tvtrim: connect to an Android TV / Google TV / Fire TV over ADB and
 remove preinstalled bloatware, reversibly.
 
 Every change is made for user 0 only (`pm disable-user` or `pm uninstall -k
 --user 0`). The APK stays on the system partition, so nothing is permanently
 deleted and a factory reset always brings everything back. Each change is
-recorded in ~/.tv-debloat/<device>.json so `restore` can undo it.
+recorded in ~/.tvtrim/<device>.json so `restore` can undo it.
 """
 
 from __future__ import annotations
@@ -21,7 +21,24 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_LIST = HERE / "bloatware.json"
-STATE_DIR = Path(os.environ.get("TV_DEBLOAT_HOME", Path.home() / ".tv-debloat"))
+LEGACY_STATE_DIR = Path.home() / ".tv-debloat"
+
+
+def _state_dir() -> Path:
+    env = os.environ.get("TVTRIM_HOME") or os.environ.get("TV_DEBLOAT_HOME")
+    if env:
+        return Path(env)
+    new = Path.home() / ".tvtrim"
+    # Carry over change history from before the rename so `restore` keeps working.
+    if not new.exists() and LEGACY_STATE_DIR.is_dir():
+        try:
+            LEGACY_STATE_DIR.rename(new)
+        except OSError:
+            return LEGACY_STATE_DIR
+    return new
+
+
+STATE_DIR = _state_dir()
 TIERS = ("safe", "optional", "aggressive")
 DEFAULT_PORT = 5555
 LAST_DEVICE = STATE_DIR / "last_device"
@@ -81,13 +98,13 @@ class Adb:
                     if state != "device":
                         raise AdbError(_state_help(s, state))
                     return s
-            raise AdbError(f"{self.serial} is not connected. Run: tvdebloat connect <tv-ip>")
+            raise AdbError(f"{self.serial} is not connected. Run: tvtrim connect <tv-ip>")
         ready = [s for s, st in devs if st == "device"]
         if not ready:
             bad = [(s, st) for s, st in devs if st != "device"]
             if bad:
                 raise AdbError(_state_help(*bad[0]))
-            raise AdbError("No TV connected. Run: tvdebloat connect <tv-ip>")
+            raise AdbError("No TV connected. Run: tvtrim connect <tv-ip>")
         if len(ready) > 1:
             # Prefer the TV we last connected to (pairing can list it twice).
             last = LAST_DEVICE.read_text().strip() if LAST_DEVICE.exists() else ""
@@ -120,7 +137,7 @@ def _state_help(serial: str, state: str) -> str:
         return (f"{serial} is unauthorized. Look at the TV and accept the "
                 "'Allow USB debugging?' prompt (tick 'Always allow'), then retry.")
     if state == "offline":
-        return f"{serial} is offline. Run: tvdebloat disconnect && tvdebloat connect <tv-ip>"
+        return f"{serial} is offline. Run: tvtrim disconnect && tvtrim connect <tv-ip>"
     return f"{serial} is in state '{state}'."
 
 
@@ -213,7 +230,7 @@ def cmd_connect(args) -> int:
               "  2. Settings > System > Developer options > turn on 'USB debugging'\n"
               "     (Fire TV: Settings > My Fire TV > Developer options > ADB debugging)\n"
               "  3. Make sure the TV and this computer are on the same network\n"
-              "  Newer Google TV builds may need: tvdebloat pair <ip>:<pair-port> <code>")
+              "  Newer Google TV builds may need: tvtrim pair <ip>:<pair-port> <code>")
         return 1
     adb.serial = target
     for _ in range(10):
@@ -236,7 +253,7 @@ def cmd_connect(args) -> int:
 
 def cmd_pair(args) -> int:
     print(Adb().run("pair", args.target, args.code, check=False))
-    print("Paired. Now run: tvdebloat connect <tv-ip>:<port>\n"
+    print("Paired. Now run: tvtrim connect <tv-ip>:<port>\n"
           "(use the IP address & Port shown on the TV's Wireless debugging screen, not the pairing port)")
     return 0
 
@@ -266,7 +283,7 @@ def cmd_scan(args) -> int:
     catalog = load_catalog(args.list)
     found = scan(adb, catalog)
     if not found:
-        print("No known bloatware found on this TV. Use `tvdebloat list` to browse all packages.")
+        print("No known bloatware found on this TV. Use `tvtrim list` to browse all packages.")
         return 0
     print(f"{'TIER':<11}{'STATUS':<10}{'PACKAGE':<46}DESCRIPTION")
     for f in found:
@@ -277,9 +294,9 @@ def cmd_scan(args) -> int:
     counts = {t: sum(1 for f in found if f["tier"] == t and f["status"] == "active") for t in TIERS}
     print(f"\nActive: {counts['safe']} safe, {counts['optional']} optional, {counts['aggressive']} aggressive")
     if counts["safe"]:
-        print("Next: tvdebloat clean            (safe tier only)")
+        print("Next: tvtrim clean            (safe tier only)")
     elif counts["optional"]:
-        print("Safe tier done. Optional apps can be removed with: tvdebloat clean --level optional --skip <app>")
+        print("Safe tier done. Optional apps can be removed with: tvtrim clean --level optional --skip <app>")
     return 0
 
 
@@ -357,7 +374,7 @@ def cmd_clean(args) -> int:
             print(color(f"  fail  {p}: {out}", "31"))
     save_state(adb.serial, state)
     print(f"\nDone. {len(targets) - failures} changed, {failures} failed. "
-          f"Undo any time with: tvdebloat restore")
+          f"Undo any time with: tvtrim restore")
     if failures < len(targets) and not args.reboot:
         print("Apps still on the home screen? Restart the TV (or re-run with --reboot).")
     if args.reboot and failures < len(targets):
@@ -415,7 +432,7 @@ def cmd_history(args) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(
-        prog="tvdebloat",
+        prog="tvtrim",
         description="Connect to an Android TV / Google TV / Fire TV over ADB and remove bloatware (reversibly).",
     )
     ap.add_argument("-d", "--device", help="adb serial or ip:port (when several are connected)")
