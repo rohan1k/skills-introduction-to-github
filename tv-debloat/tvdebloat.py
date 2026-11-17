@@ -276,8 +276,10 @@ def cmd_scan(args) -> int:
             print(f"{'':<21}! {f['note']}")
     counts = {t: sum(1 for f in found if f["tier"] == t and f["status"] == "active") for t in TIERS}
     print(f"\nActive: {counts['safe']} safe, {counts['optional']} optional, {counts['aggressive']} aggressive")
-    print("Next: tvdebloat clean            (safe tier only)\n"
-          "      tvdebloat clean --level optional")
+    if counts["safe"]:
+        print("Next: tvdebloat clean            (safe tier only)")
+    elif counts["optional"]:
+        print("Safe tier done. Optional apps can be removed with: tvdebloat clean --level optional --skip <app>")
     return 0
 
 
