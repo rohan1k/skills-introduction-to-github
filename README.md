@@ -1,4 +1,6 @@
-# tv-debloat
+# 📺 tvtrim
+
+*Trim the bloat off your smart TV.*
 
 A command-line tool that connects to your smart TV over Wi-Fi and removes preinstalled bloatware: ads, tracking, promo rows and apps you never asked for. Every change can be undone.
 
@@ -8,8 +10,8 @@ A command-line tool that connects to your smart TV over Wi-Fi and removes preins
 ## Quick start
 
 ```bash
-git clone https://github.com/rohan1k/skills-introduction-to-github.git
-cd skills-introduction-to-github/tv-debloat
+git clone https://github.com/rohan1k/tvtrim.git
+cd tvtrim/tv-debloat
 brew install android-platform-tools        # or: winget install Google.PlatformTools / sudo apt install adb
 
 python3 tvdebloat.py connect <tv-ip>       # accept the prompt on the TV
@@ -37,6 +39,6 @@ See [`tv-debloat/README.md`](tv-debloat/README.md) for the full guide: the three
 
 ---
 
-This repository started as the GitHub Skills [Introduction to GitHub](https://github.com/rohan1k/skills-introduction-to-github/issues/1) exercise.
+This repository started as the GitHub Skills [Introduction to GitHub](https://github.com/rohan1k/tvtrim/issues/1) exercise.
 
 &copy; 2025 GitHub &bull; [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) &bull; [MIT License](https://gh.io/mit)
