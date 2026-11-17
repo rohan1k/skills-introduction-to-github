@@ -87,7 +87,7 @@ Suggested run on a TCL:
 | Command | What it does |
 |---|---|
 | `tvtrim clean` | Ads and telemetry |
-| `tvtrim clean --level optional --skip com.tcl.airplay2 --skip com.mediatek.AirplayAPK --skip com.mediatek.airplaydaemon` |  |
+| `tvtrim clean --level optional -g tcl --skip com.tcl.airplay2 --skip com.mediatek.AirplayAPK --skip com.mediatek.airplaydaemon` | TCL extras, keeping AirPlay |
 
 ### Tested: TCL Smart TV Pro, Android 14 (Google TV)
 
