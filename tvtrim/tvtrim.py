@@ -418,12 +418,25 @@ def cmd_restore(args) -> int:
 
 
 def cmd_history(args) -> int:
-    adb = connected(args)
-    changes = load_state(adb.serial)["changes"]
-    if not changes:
-        print("No changes recorded for this TV.")
-    for p, c in sorted(changes.items()):
-        print(f"{c['at']}  {c['action']:<10}{p}")
+    """Reads the local log, so it works without the TV connected."""
+    if args.device:
+        files = [state_path(args.device)]
+    else:
+        files = sorted(STATE_DIR.glob("*.json")) if STATE_DIR.is_dir() else []
+    shown = 0
+    for f in files:
+        if not f.exists():
+            continue
+        data = json.loads(f.read_text())
+        changes = data.get("changes", {})
+        if not changes:
+            continue
+        shown += 1
+        print(f"{data.get('device', f.stem)}  ({len(changes)} changes)")
+        for p, c in sorted(changes.items(), key=lambda kv: (kv[1]["at"], kv[0])):
+            print(f"  {c['at']}  {c['action']:<10}{p}")
+    if not shown:
+        print("No changes recorded.")
     return 0
 
 

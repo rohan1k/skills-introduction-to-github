@@ -22,6 +22,7 @@ Make `tvtrim` a command you can run from anywhere (run this once, inside this fo
 
 ```bash
 chmod +x tvtrim.py
+sudo mkdir -p /usr/local/bin
 sudo ln -sf "$PWD/tvtrim.py" /usr/local/bin/tvtrim
 ```
 
@@ -38,29 +39,29 @@ If Developer options has **Wireless debugging** instead of a plain on/off switch
 
 ## 2. Use it
 
-```bash
-tvtrim connect 192.168.1.50   # accept the "Allow debugging?" prompt on the TV
-tvtrim scan                   # see what bloatware is installed
-tvtrim clean --dry-run        # preview
-tvtrim clean                  # disable the "safe" tier
-```
+| Command | What it does |
+|---|---|
+| `tvtrim connect 192.168.1.50` | Accept the "Allow debugging?" prompt on the TV |
+| `tvtrim scan` | See what bloatware is installed |
+| `tvtrim clean --dry-run` | Preview |
+| `tvtrim clean` | Disable the "safe" tier |
 
 Go further:
 
-```bash
-tvtrim clean --level optional --skip com.netflix.ninja   # also preinstalled apps, keep Netflix
-tvtrim clean --uninstall                                # uninstall for user 0 (frees storage)
-tvtrim clean -p com.some.package                        # target a specific package
-tvtrim list --third-party --filter tcl                  # browse what's installed
-```
+| Command | What it does |
+|---|---|
+| `tvtrim clean --level optional --skip com.netflix.ninja` | Also preinstalled apps, keep Netflix |
+| `tvtrim clean --uninstall` | Uninstall for user 0 (frees storage) |
+| `tvtrim clean -p com.some.package` | Target a specific package |
+| `tvtrim list --third-party --filter tcl` | Browse what's installed |
 
 Undo:
 
-```bash
-tvtrim history     # what was changed
-tvtrim restore     # undo everything
-tvtrim restore -p com.google.android.videos
-```
+| Command | What it does |
+|---|---|
+| `tvtrim history` | What was changed |
+| `tvtrim restore` | Undo everything |
+| `tvtrim restore -p com.google.android.videos` | Undo one app |
 
 ## Tiers
 
@@ -83,10 +84,10 @@ The catalog has 32 TCL packages, based on [tcl-tv-despy](https://github.com/aviv
 
 Suggested run on a TCL:
 
-```bash
-tvtrim clean                                   # ads and telemetry
-tvtrim clean --level optional --skip com.tcl.airplay2 --skip com.mediatek.AirplayAPK --skip com.mediatek.airplaydaemon
-```
+| Command | What it does |
+|---|---|
+| `tvtrim clean` | Ads and telemetry |
+| `tvtrim clean --level optional --skip com.tcl.airplay2 --skip com.mediatek.AirplayAPK --skip com.mediatek.airplaydaemon` |  |
 
 ### Tested: TCL Smart TV Pro, Android 14 (Google TV)
 

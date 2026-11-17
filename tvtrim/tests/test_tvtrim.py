@@ -60,6 +60,15 @@ class TvDebloatTest(unittest.TestCase):
         self.assertTrue(all(s == "enabled" for s in self.tv().values()), self.tv())
         self.assertIn("No changes", self.run_cli("history")[1])
 
+    def test_history_offline(self):
+        self.run_cli("connect", "192.168.1.50")
+        self.run_cli("clean", "-y")
+        os.remove(os.environ["FAKE_ADB_STATE"])  # TV gone
+        code, out = self.run_cli("history")
+        self.assertEqual(code, 0)
+        self.assertIn("192.168.1.50:5555", out)
+        self.assertIn("com.tcl.partnercustomizer", out)
+
     def test_tcl(self):
         self.run_cli("connect", "192.168.1.50")
         self.run_cli("clean", "-y")
